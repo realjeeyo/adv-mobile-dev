@@ -22,9 +22,8 @@ This project is part of **Advanced Mobile Development** coursework and demonstra
 ```bash
 adv-mobile-dev/
 │-- app/ # Screens (Expo Router structure)
-│ ├── index.js # Home/landing page
+│ ├── index.js # Login Screen (for now)
 │ ├── signup.js # Sign Up screen
-│ ├── login.js # Sign In screen
 │ └── ...
 │
 │-- assets/ # Images, icons, fonts
