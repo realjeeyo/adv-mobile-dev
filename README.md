@@ -25,12 +25,13 @@ adv-mobile-dev/
 │ ├── index.js # Login Screen (for now)
 │ ├── signup.js # Sign Up screen
 │ └── ...
-│
+│-- activities/ # Where Activity 1 and Activity 2 are stored, in PDF format.
 │-- assets/ # Images, icons, fonts
 │-- components/ # Reusable UI components
 │-- package.json # Dependencies & scripts
 │-- README.md # Project documentation
 ```
+NOTE: It is important to note that Activity 1 and Activity 2 files are stored in the /activities directory
 
 ---
 
@@ -63,10 +64,10 @@ adv-mobile-dev/
 </p>
 
 ## 🔧 Tech Stack
-Expo
-React Native
-Expo Router
-React Native Linear Gradient
+- Expo
+- React Native
+- Expo Router
+- React Native Linear Gradient
 
 ## 📜 License
 This project is developed for educational purposes.
