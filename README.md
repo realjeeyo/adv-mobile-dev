@@ -19,6 +19,7 @@ This project is part of **Advanced Mobile Development** coursework and demonstra
 ---
 
 ## 📂 Project Structure
+```bash
 adv-mobile-dev/
 │-- app/ # Screens (Expo Router structure)
 │ ├── index.js # Home/landing page
@@ -30,6 +31,7 @@ adv-mobile-dev/
 │-- components/ # Reusable UI components
 │-- package.json # Dependencies & scripts
 │-- README.md # Project documentation
+```
 
 ---
 
