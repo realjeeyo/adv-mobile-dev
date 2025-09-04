@@ -9,9 +9,9 @@ This project is part of **Advanced Mobile Development** coursework and demonstra
 
 - 🎨 **Spotify-inspired UI** (dark theme, gradient buttons, styled inputs)
 - 🔐 **Authentication Screens**
-   - Sign Up
-   - Sign In
-   - Forgot Password
+    - Sign Up
+    - Sign In
+    - Forgot Password
 - 🧭 **Navigation** with **Expo Router**
 - 📱 **Responsive Layouts** that adapt to different screen sizes
 - 🎭 **Custom Styles** with gradient buttons, shadows, and embossed inputs
@@ -25,7 +25,7 @@ adv-mobile-dev/
 │ ├── index.js # Login Screen (for now)
 │ ├── signup.js # Sign Up screen
 │ └── ...
-│-- activities/ # Where Activity 1 and Activity 2 are stored, in PDF format.
+│-- activities/ # Where Week 1 Activity 1 and Activity 2 are stored, in PDF format.
 │-- assets/ # Images, icons, fonts
 │-- components/ # Reusable UI components
 │-- package.json # Dependencies & scripts
@@ -41,8 +41,7 @@ NOTE: It is important to note that Activity 1 and Activity 2 files are stored in
    ```bash
    git clone https://github.com/realjeeyo/adv-mobile-dev.git
    cd adv-mobile-dev
-   ```
-   
+
 2. **Install dependencies**
    ```bash
    npm install
@@ -58,10 +57,10 @@ NOTE: It is important to note that Activity 1 and Activity 2 files are stored in
 - Scan the QR code from your terminal or browser
 
 ## Screenshots
-<p align="center">
-<img src="screenshots/Signup Page 09:02:25.png" alt="Sign Up Screen" width="250"/>
-<img src="screenshots/Login Page 09:02:25.png" alt="Login Screen" width="250"/>
-</p>
+Week 2 Activity 1 (Authentication)
+<p align="center"> <img src="screenshots/Signup Page 09:02:25.png" alt="Sign Up Screen" width="250"/> <img src="screenshots/Login Page 09:02:25.png" alt="Login Screen" width="250"/> </p>
+Week 2 Activity 2
+<p align="center"> <img src="screenshots/Home Page 09:04:25.png" alt="Home Screen" width="250"/> <img src="screenshots/Profile Page 09:04:25.png" alt="Profile Screen" width="250"/> <img src="screenshots/Playlists Page 09:04:25.png" alt="Playlists Screen" width="250"/> </p>
 
 ## 🔧 Tech Stack
 - Expo
