@@ -59,12 +59,15 @@ NOTE: It is important to note that Activity 1 and Activity 2 files are stored in
 ## Screenshots
 
 Week 2 Activity 1 (Authentication)
+We implemented a basic authentication flow with signup and login functionality. This allowed users to access the app.
 <p align="center">
   <img src="screenshots/Signup Page 09:02:25.png" alt="Sign Up Screen" width="250"/>
   <img src="screenshots/Login Page 09:02:25.png" alt="Login Screen" width="250"/>
 </p>
 
+
 Week 2 Activity 2
+We developed the core navigation structure of the app with a Home, Profile, and Playlists screen. This established the foundation for user interaction and smooth movement between different sections.
 <p align="center">
   <img src="screenshots/Home Page 09:04:25.png" alt="Home Screen" width="250"/>
   <img src="screenshots/Profile Page 09:04:25.png" alt="Profile Screen" width="250"/>
@@ -72,12 +75,14 @@ Week 2 Activity 2
 </p>
 
 Week 4 Activity 1 (Playlist Builder)
+We created a playlist builder feature where users can add, view, and manage playlists. This activity introduced state management for handling playlists and updating them dynamically.
 <p align="center">
   <img src="screenshots/Playlists Screen 09:16:25.png" alt="Playlists Screen" width="250"/>
   <img src="screenshots/Playlist Opened 09:16:25.png" alt="Playlist Opened Screen" width="250"/>
 </p>
 
 Week 4 Activity 2 (Profile Form Validation)
+We added an editable profile form with validation for username, email, and favorite genre. Invalid inputs now trigger visual feedback, ensuring data integrity and better user experience.
 <p align="center">
     <img src="screenshots/Profile Screen 09:18:25.png" alt="Profile Screen" width="250"/>>
 </p>
