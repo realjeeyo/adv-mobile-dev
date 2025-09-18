@@ -77,6 +77,11 @@ Week 4 Activity 1 (Playlist Builder)
   <img src="screenshots/Playlist Opened 09:16:25.png" alt="Playlist Opened Screen" width="250"/>
 </p>
 
+Week 4 Activity 2 (Profile Form Validation)
+<p align="center">
+    <img src="screenshots/Profile Screen 09:18:25.png" alt="Profile Screen" width="250"/>>
+</p>
+
 
 ## 🔧 Tech Stack
 - Expo

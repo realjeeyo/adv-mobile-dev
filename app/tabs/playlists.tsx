@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
+import { Swipeable } from "react-native-gesture-handler";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Animated, { FadeInRight, FadeOutLeft } from "react-native-reanimated";
@@ -244,48 +245,50 @@ export default function YourLibrary() {
           </View>
         ) : (
           state.present.map((playlist, index) => (
-            <TouchableOpacity
+            <Swipeable
               key={playlist.id}
-              onPress={() => router.push(`/playlist/${playlist.id}`)}
-              style={styles.playlistItem}
-              activeOpacity={0.7}
-            >
-              <Animated.View
-                entering={FadeInRight.delay(index * 50)}
-                exiting={FadeOutLeft}
-                style={styles.playlistRow}
-              >
-                <Image
-                  source={
-                    playlist.coverUri
-                      ? { uri: playlist.coverUri }
-                      : require("@/assets/images/playlist1.png")
-                  }
-                  style={styles.playlistImage}
-                />
-                <View style={styles.playlistInfo}>
-                  <Text style={styles.playlistName} numberOfLines={1}>
-                    {playlist.name}
-                  </Text>
-                  <View style={styles.playlistMeta}>
-                    <View style={styles.playlistType}>
-                      <Ionicons name="musical-notes" size={12} color="#1DB954" />
-                      <Text style={styles.playlistSubtext}>Playlist</Text>
-                    </View>
-                    <Text style={styles.playlistSubtext}> • You</Text>
-                  </View>
-                </View>
+              renderRightActions={() => (
                 <TouchableOpacity
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    dispatch({ type: "REMOVE_PLAYLIST", index });
-                  }}
-                  style={styles.deleteButton}
+                  style={styles.swipeDelete}
+                  onPress={() => dispatch({ type: "REMOVE_PLAYLIST", index })}
                 >
-                  <Ionicons name="ellipsis-vertical" size={20} color="#666" />
+                  <Ionicons name="trash" size={24} color="#fff" />
                 </TouchableOpacity>
-              </Animated.View>
-            </TouchableOpacity>
+              )}
+            >
+              <TouchableOpacity
+                onPress={() => router.push(`/playlist/${playlist.id}`)}
+                style={styles.playlistItem}
+                activeOpacity={0.7}
+              >
+                <Animated.View
+                  entering={FadeInRight.delay(index * 50)}
+                  exiting={FadeOutLeft}
+                  style={styles.playlistRow}
+                >
+                  <Image
+                    source={
+                      playlist.coverUri
+                        ? { uri: playlist.coverUri }
+                        : require("@/assets/images/playlist1.png")
+                    }
+                    style={styles.playlistImage}
+                  />
+                  <View style={styles.playlistInfo}>
+                    <Text style={styles.playlistName} numberOfLines={1}>
+                      {playlist.name}
+                    </Text>
+                    <View style={styles.playlistMeta}>
+                      <View style={styles.playlistType}>
+                        <Ionicons name="musical-notes" size={12} color="#1DB954" />
+                        <Text style={styles.playlistSubtext}>Playlist</Text>
+                      </View>
+                      <Text style={styles.playlistSubtext}> • You</Text>
+                    </View>
+                  </View>
+                </Animated.View>
+              </TouchableOpacity>
+            </Swipeable>
           ))
         )}
       </ScrollView>
@@ -328,6 +331,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 16,
     marginBottom: 8,
+  },
+  swipeDelete: {
+    backgroundColor: "#ff3b30",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 70,
+    borderRadius: 6,
+    marginVertical: 8,
   },
   addButton: { marginTop: 8, padding: 8 },
   cancelButton: { marginTop: 4, padding: 8 },

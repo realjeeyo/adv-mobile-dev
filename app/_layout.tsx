@@ -37,8 +37,8 @@ function CustomDrawerContent(props: any) {
         style={styles.drawerItem}
         onPress={() => router.push("/tabs/search")}
       >
-        <MaterialIcons name="history" size={20} color="#fff" style={styles.icon} />
-        <Text style={styles.label}>Recents</Text>
+        <MaterialIcons name="search" size={20} color="#fff" style={styles.icon} />
+        <Text style={styles.label}>Search</Text>
       </TouchableOpacity>
 
       <TouchableOpacity

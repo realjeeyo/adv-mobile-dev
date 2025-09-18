@@ -1,4 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { Swipeable } from "react-native-gesture-handler";
 import {
   View,
   Text,
@@ -32,28 +33,34 @@ interface SongRowProps {
 
 function SongRow({ song, index, onDelete }: SongRowProps) {
   return (
-    <View style={styles.songRow}>
-      <Image
-        source={require("@/assets/images/playlist1.png")}
-        style={styles.songImage}
-      />
-      <View style={styles.songInfo}>
-        <Text style={styles.songTitle} numberOfLines={1}>
-          {song.song}
-        </Text>
-        <Text style={styles.songArtist} numberOfLines={1}>
-          {song.author}
-        </Text>
+    <Swipeable
+      renderRightActions={() => (
+        <TouchableOpacity
+          style={styles.swipeDelete}
+          onPress={() => onDelete(song.id)}
+        >
+          <Ionicons name="trash" size={24} color="#fff" />
+        </TouchableOpacity>
+      )}
+    >
+      <View style={styles.songRow}>
+        <Image
+          source={require("@/assets/images/playlist1.png")}
+          style={styles.songImage}
+        />
+        <View style={styles.songInfo}>
+          <Text style={styles.songTitle} numberOfLines={1}>
+            {song.song}
+          </Text>
+          <Text style={styles.songArtist} numberOfLines={1}>
+            {song.author}
+          </Text>
+        </View>
       </View>
-      <TouchableOpacity
-        onPress={() => onDelete(song.id)}
-        style={styles.songMenu}
-      >
-        <Ionicons name="ellipsis-horizontal" size={20} color="#b3b3b3" />
-      </TouchableOpacity>
-    </View>
+    </Swipeable>
   );
 }
+
 
 // Add Song Modal Component
 interface AddSongModalProps {
@@ -584,6 +591,14 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
+  },
+  swipeDelete: {
+    backgroundColor: "#ff3b30",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 70,
+    borderRadius: 6,
+    marginVertical: 4,
   },
   modalAddText: {
     color: "#000",
