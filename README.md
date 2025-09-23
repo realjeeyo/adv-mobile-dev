@@ -87,12 +87,41 @@ Week 4 Activity 2 (Profile Form Validation)
     <img src="screenshots/Profile Screen 09:18:25.png" alt="Profile Screen" width="250"/>>
 </p>
 
+Week 5 Activity 1 (Theme Switcher)
+<p> We implemented a comprehensive theme switcher system with Redux state management, animated transitions, and custom theme options. Users can now switch between light mode, dark mode, and custom themes with smooth animations. The theme preference is automatically persisted and restored on app launch. </p>
+<p align="center">
+  <img src="screenshots/Theme Screen.png" alt="Theme Settings Screen" width="250"/>
+  <img src="screenshots/light1.png" alt="Light Theme Home" width="250"/>
+  <img src="screenshots/dark1.png" alt="Dark Theme Home" width="250"/>
+</p>
+<p align="center">
+  <img src="screenshots/light2.png" alt="Light Theme Playlists" width="250"/>
+  <img src="screenshots/dark2.png" alt="Dark Theme Playlists" width="250"/>
+  <img src="screenshots/custom1.png" alt="Custom Theme Example" width="250"/>
+</p>
+<p align="center">
+  <img src="screenshots/light3.png" alt="Light Theme Profile" width="250"/>
+  <img src="screenshots/dark3.png" alt="Dark Theme Profile" width="250"/>
+  <img src="screenshots/custom2.png" alt="Custom Theme Profile" width="250"/>
+</p>
+<p align="center">
+  <img src="screenshots/light4.png" alt="Light Theme Playlist Detail" width="250"/>
+  <img src="screenshots/dark5.png" alt="Dark Theme Playlist Detail" width="250"/>
+  <img src="screenshots/custom3.png" alt="Custom Theme Playlist Detail" width="250"/>
+</p>
+<p align="center">
+  <img src="screenshots/custom4.png" alt="Custom Theme Color Picker" width="250"/>
+</p>
+
 
 ## 🔧 Tech Stack
 - Expo
 - React Native
 - Expo Router
 - React Native Linear Gradient
+- Redux Toolkit (State Management)
+- React Native Reanimated (Animations)
+- AsyncStorage (Persistence)
 
 ## 📜 License
 This project is developed for educational purposes.

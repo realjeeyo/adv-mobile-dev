@@ -1,22 +1,25 @@
-import React, { useState, useEffect, useCallback } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  ScrollView,
-  TextInput,
-} from "react-native";
+import ThemeSettings from "@/components/ThemeSettings";
+import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSequence,
-  withSpring,
-} from "react-native-reanimated";
 import * as ImagePicker from "expo-image-picker";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  Image,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSequence,
+  withTiming
+} from "react-native-reanimated";
 
 // Predefined genres
 const GENRES = ["Pop", "Rock", "Jazz", "Classical", "Hip-Hop"];
@@ -27,6 +30,7 @@ const validateEmail = (email: string) =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 export default function ProfileScreen() {
+  const { colors } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [username, setUsername] = useState("jee");
   const [email, setEmail] = useState("jee@gmail.com");
@@ -36,6 +40,7 @@ export default function ProfileScreen() {
   const [playlists, setPlaylists] = useState<
     { id: string; name: string; cover: string }[]
   >([]);
+  const [showThemeSettings, setShowThemeSettings] = useState(false);
 
   // Individual shake animations for each input
   const usernameShake = useSharedValue(0);
@@ -57,10 +62,10 @@ export default function ProfileScreen() {
   // Helper function to trigger shake animation
   const triggerShake = (shakeValue: Animated.SharedValue<number>) => {
     shakeValue.value = withSequence(
-      withSpring(-10, { stiffness: 500, damping: 10 }),
-      withSpring(10, { stiffness: 500, damping: 10 }),
-      withSpring(-5, { stiffness: 500, damping: 10 }),
-      withSpring(0, { stiffness: 500, damping: 10 })
+      withTiming(-10, { duration: 80 }),
+      withTiming(10, { duration: 80 }),
+      withTiming(-6, { duration: 60 }),
+      withTiming(0, { duration: 60 })
     );
   };
 
@@ -160,13 +165,21 @@ export default function ProfileScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Header */}
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Profile</Text>
-        <TouchableOpacity>
-          <Ionicons name="share-outline" size={24} color="#fff" />
-        </TouchableOpacity>
+        <Text style={[styles.headerTitle, { color: colors.text }]}>Profile</Text>
+        <View style={styles.headerActions}>
+          <TouchableOpacity 
+            onPress={() => setShowThemeSettings(true)}
+            style={styles.headerButton}
+          >
+            <Ionicons name="color-palette-outline" size={24} color={colors.text} />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.headerButton}>
+            <Ionicons name="share-outline" size={24} color={colors.text} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Profile Section */}
@@ -185,15 +198,15 @@ export default function ProfileScreen() {
         </TouchableOpacity>
 
         <View style={styles.profileText}>
-          <Text style={styles.username}>{username}</Text>
-          <Text style={styles.email}>{email}</Text>
-          <Text style={styles.userTag}>Favorite Genre: {genre}</Text>
+          <Text style={[styles.username, { color: colors.text }]}>{username}</Text>
+          <Text style={[styles.email, { color: colors.textSecondary }]}>{email}</Text>
+          <Text style={[styles.userTag, { color: colors.textSecondary }]}>Favorite Genre: {genre}</Text>
         </View>
       </View>
 
       {/* Edit Button */}
       <TouchableOpacity
-        style={styles.editButton}
+        style={[styles.editButton, { backgroundColor: colors.primary }]}
         onPress={() => setIsEditing(!isEditing)}
       >
         <Text style={styles.editButtonText}>Edit</Text>
@@ -297,9 +310,9 @@ export default function ProfileScreen() {
 
       {/* Playlists Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Playlists</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Playlists</Text>
         {playlists.length === 0 ? (
-          <Text style={styles.emptyText}>No playlists yet</Text>
+          <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No playlists yet</Text>
         ) : (
           playlists.map((playlist) => (
             <View key={playlist.id} style={styles.playlistCard}>
@@ -307,7 +320,7 @@ export default function ProfileScreen() {
                 source={{ uri: playlist.cover }}
                 style={styles.playlistImage}
               />
-              <Text style={styles.playlistName}>{playlist.name}</Text>
+              <Text style={[styles.playlistName, { color: colors.text }]}>{playlist.name}</Text>
             </View>
           ))
         )}
@@ -315,15 +328,37 @@ export default function ProfileScreen() {
 
       {/* Recently Played Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Recently Played</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Recently Played</Text>
         <View style={styles.recentItem}>
           <Image
             source={{ uri: "https://via.placeholder.com/50" }}
             style={styles.recentImage}
           />
-          <Text style={styles.recentText}>Blinding Lights - The Weeknd</Text>
+          <Text style={[styles.recentText, { color: colors.text }]}>Blinding Lights - The Weeknd</Text>
         </View>
       </View>
+
+      {/* Theme Settings Modal */}
+      <Modal
+        visible={showThemeSettings}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowThemeSettings(false)}
+      >
+        <View style={{ flex: 1 }}>
+          <View style={[styles.modalHeader, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
+            <TouchableOpacity
+              onPress={() => setShowThemeSettings(false)}
+              style={styles.closeButton}
+            >
+              <Ionicons name="close" size={24} color={colors.text} />
+            </TouchableOpacity>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Theme Settings</Text>
+            <View style={{ width: 24 }} />
+          </View>
+          <ThemeSettings />
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -342,7 +377,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerTitle: {
-    color: "#fff",
     fontSize: 18,
     fontWeight: "600",
   },
@@ -371,16 +405,13 @@ const styles = StyleSheet.create({
     marginLeft: 15,
   },
   username: {
-    color: "#fff",
     fontSize: 22,
     fontWeight: "bold",
   },
   email: {
-    color: "#aaa",
     fontSize: 14,
   },
   userTag: {
-    color: "#aaa",
     fontSize: 14,
   },
   editButton: {
@@ -458,7 +489,6 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   sectionTitle: {
-    color: "#fff",
     fontSize: 18,
     fontWeight: "600",
     marginBottom: 10,
@@ -475,11 +505,9 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   playlistName: {
-    color: "#fff",
     fontSize: 16,
   },
   emptyText: {
-    color: "#aaa",
     fontSize: 14,
   },
   recentItem: {
@@ -494,7 +522,28 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   recentText: {
-    color: "#fff",
     fontSize: 14,
+  },
+  headerActions: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  headerButton: {
+    marginLeft: 16,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+  },
+  closeButton: {
+    padding: 4,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "600",
   },
 });

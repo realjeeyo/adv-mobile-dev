@@ -1,21 +1,25 @@
-import React from 'react';
-import { StyleSheet, Text, View, Button, Image, ScrollView, Alert, useWindowDimensions } from 'react-native';
+import { AnimatedThemeContainer, ThemeTransitionWrapper } from '@/components/AnimatedTheme';
+import { useTheme } from '@/hooks/useTheme';
 import { LinearGradient } from 'expo-linear-gradient';
+import React from 'react';
+import { Alert, Button, Image, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
 export default function ComponentShowcase() {
   const { width } = useWindowDimensions();
+  const { colors } = useTheme();
   const isTablet = width >= 800; // Pixel Tablet breakpoint
 
   return (
-    <LinearGradient
-      colors={['#0f2027', '#203a43', '#2c5364']}
-      style={styles.gradientBackground}
-    >
-      <View style={[styles.container, isTablet && styles.tabletContainer]}>
+    <ThemeTransitionWrapper>
+      <LinearGradient
+        colors={[colors.background, colors.surface, colors.primary]}
+        style={styles.gradientBackground}
+      >
+        <AnimatedThemeContainer style={styles.container}>
 
         {/* Left Section: Info */}
         <View style={[styles.infoSection, isTablet && styles.infoSectionTablet]}>
-          <Text style={[styles.header, isTablet && styles.headerTablet]}>
+          <Text style={[styles.header, isTablet && styles.headerTablet, { color: colors.text }]}>
             Component Showcase
           </Text>
 
@@ -24,7 +28,7 @@ export default function ComponentShowcase() {
             style={[styles.logo, isTablet && styles.logoTablet]}
           />
 
-          <Text style={[styles.text, isTablet && styles.textTablet]}>
+          <Text style={[styles.text, isTablet && styles.textTablet, { color: colors.textSecondary }]}>
             Welcome to my component showcase page.{"\n"}
             This displays: Text, Button, Image, and ScrollView!
           </Text>
@@ -32,7 +36,7 @@ export default function ComponentShowcase() {
           <View style={[styles.buttonContainer, isTablet && styles.buttonContainerTablet]}>
             <Button
               title="Test Button"
-              color="#38bdf8"
+              color={colors.primary}
               onPress={() =>
                 Alert.alert('Button Pressed!', 'You pressed the button!')
               }
@@ -42,7 +46,7 @@ export default function ComponentShowcase() {
 
         {/* Right Section: Scrollable List */}
         <View style={[styles.scrollSection, isTablet && styles.scrollSectionTablet]}>
-          <Text style={[styles.subHeader, isTablet && styles.subHeaderTablet]}>
+          <Text style={[styles.subHeader, isTablet && styles.subHeaderTablet, { color: colors.text }]}>
             Scrollable Items
           </Text>
           <ScrollView
@@ -50,16 +54,17 @@ export default function ComponentShowcase() {
             contentContainerStyle={[styles.scrollContent, isTablet && styles.scrollContentTablet]}
           >
             {[...Array(20)].map((_, i) => (
-              <View key={i} style={[styles.scrollItemBox, isTablet && styles.scrollItemBoxTablet]}>
-                <Text style={[styles.scrollItem, isTablet && styles.scrollItemTablet]}>
+              <View key={i} style={[styles.scrollItemBox, isTablet && styles.scrollItemBoxTablet, { backgroundColor: colors.surface }]}>
+                <Text style={[styles.scrollItem, isTablet && styles.scrollItemTablet, { color: colors.text }]}>
                   🔹 Item #{i + 1}
                 </Text>
               </View>
             ))}
           </ScrollView>
         </View>
-      </View>
-    </LinearGradient>
+        </AnimatedThemeContainer>
+      </LinearGradient>
+    </ThemeTransitionWrapper>
   );
 }
 

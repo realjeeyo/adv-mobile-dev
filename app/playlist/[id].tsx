@@ -1,20 +1,22 @@
+import { ThemeTransitionWrapper } from "@/components/AnimatedTheme";
+import { useTheme } from "@/hooks/useTheme";
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Swipeable } from "react-native-gesture-handler";
+import { useEffect, useState } from "react";
 import {
-  View,
-  Text,
+  Dimensions,
+  Image,
+  ScrollView,
+  StatusBar,
   StyleSheet,
+  Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  Image,
-  Dimensions,
-  StatusBar,
+  View,
 } from "react-native";
-import { useState, useEffect } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Ionicons } from "@expo/vector-icons";
-import { LinearGradient } from "expo-linear-gradient";
+import { Swipeable } from "react-native-gesture-handler";
 
 const { width, height } = Dimensions.get("window");
 
@@ -29,9 +31,10 @@ interface SongRowProps {
   song: Song;
   index: number;
   onDelete: (songId: string) => void;
+  colors: any;
 }
 
-function SongRow({ song, index, onDelete }: SongRowProps) {
+function SongRow({ song, index, onDelete, colors }: SongRowProps) {
   return (
     <Swipeable
       renderRightActions={() => (
@@ -49,10 +52,10 @@ function SongRow({ song, index, onDelete }: SongRowProps) {
           style={styles.songImage}
         />
         <View style={styles.songInfo}>
-          <Text style={styles.songTitle} numberOfLines={1}>
+          <Text style={[styles.songTitle, { color: colors.text }]} numberOfLines={1}>
             {song.song}
           </Text>
-          <Text style={styles.songArtist} numberOfLines={1}>
+          <Text style={[styles.songArtist, { color: colors.textSecondary }]} numberOfLines={1}>
             {song.author}
           </Text>
         </View>
@@ -71,22 +74,23 @@ interface AddSongModalProps {
   onAuthorChange: (text: string) => void;
   onAdd: () => void;
   onCancel: () => void;
+  colors: any;
 }
 
-function AddSongModal({ visible, song, author, onSongChange, onAuthorChange, onAdd, onCancel }: AddSongModalProps) {
+function AddSongModal({ visible, song, author, onSongChange, onAuthorChange, onAdd, onCancel, colors }: AddSongModalProps) {
   if (!visible) return null;
 
   return (
     <View style={styles.modalOverlay}>
-      <View style={styles.modalContent}>
-        <Text style={styles.modalTitle}>Add Song</Text>
+      <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
+        <Text style={[styles.modalTitle, { color: colors.text }]}>Add Song</Text>
 
         <TextInput
           placeholder="Song name"
           value={song}
           onChangeText={onSongChange}
-          style={styles.modalInput}
-          placeholderTextColor="#888"
+          style={[styles.modalInput, { backgroundColor: colors.background, color: colors.text }]}
+          placeholderTextColor={colors.textSecondary}
           autoFocus
         />
 
@@ -94,15 +98,15 @@ function AddSongModal({ visible, song, author, onSongChange, onAuthorChange, onA
           placeholder="Artist name"
           value={author}
           onChangeText={onAuthorChange}
-          style={styles.modalInput}
-          placeholderTextColor="#888"
+          style={[styles.modalInput, { backgroundColor: colors.background, color: colors.text }]}
+          placeholderTextColor={colors.textSecondary}
         />
 
         <View style={styles.modalButtons}>
-          <TouchableOpacity onPress={onCancel} style={styles.modalCancelButton}>
-            <Text style={styles.modalCancelText}>Cancel</Text>
+          <TouchableOpacity onPress={onCancel} style={[styles.modalCancelButton, { backgroundColor: colors.border }]}>
+            <Text style={[styles.modalCancelText, { color: colors.text }]}>Cancel</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={onAdd} style={styles.modalAddButton}>
+          <TouchableOpacity onPress={onAdd} style={[styles.modalAddButton, { backgroundColor: colors.primary }]}>
             <Text style={styles.modalAddText}>Add</Text>
           </TouchableOpacity>
         </View>
@@ -114,6 +118,7 @@ function AddSongModal({ visible, song, author, onSongChange, onAuthorChange, onA
 export default function PlaylistDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const { colors } = useTheme();
   const [songs, setSongs] = useState<Song[]>([]);
   const [song, setSong] = useState("");
   const [author, setAuthor] = useState("");
@@ -207,14 +212,17 @@ export default function PlaylistDetail() {
 
   if (!id) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.errorText}>No playlist ID provided</Text>
-      </View>
+      <ThemeTransitionWrapper>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
+          <Text style={[styles.errorText, { color: colors.text }]}>No playlist ID provided</Text>
+        </View>
+      </ThemeTransitionWrapper>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <ThemeTransitionWrapper>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
       <StatusBar barStyle="light-content" />
 
       <ScrollView style={styles.scrollView}>
@@ -263,58 +271,58 @@ export default function PlaylistDetail() {
         </LinearGradient>
 
         {/* Controls Section */}
-        <View style={styles.controlsSection}>
+        <View style={[styles.controlsSection, { backgroundColor: colors.background }]}>
           <View style={styles.playControls}>
             <TouchableOpacity style={styles.controlButton}>
-              <Ionicons name="heart-outline" size={24} color="#b3b3b3" />
+              <Ionicons name="heart-outline" size={24} color={colors.textSecondary} />
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.controlButton}>
-              <Ionicons name="download-outline" size={24} color="#b3b3b3" />
+              <Ionicons name="download-outline" size={24} color={colors.textSecondary} />
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.controlButton}>
-              <Ionicons name="person-add-outline" size={24} color="#b3b3b3" />
+              <Ionicons name="person-add-outline" size={24} color={colors.textSecondary} />
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.controlButton}>
-              <Ionicons name="ellipsis-horizontal" size={24} color="#b3b3b3" />
+              <Ionicons name="ellipsis-horizontal" size={24} color={colors.textSecondary} />
             </TouchableOpacity>
 
             <View style={styles.spacer} />
 
             <TouchableOpacity style={styles.shuffleButton}>
-              <Ionicons name="shuffle" size={20} color="#b3b3b3" />
+              <Ionicons name="shuffle" size={20} color={colors.textSecondary} />
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.playButton}>
-              <Ionicons name="play" size={28} color="#000" />
+            <TouchableOpacity style={[styles.playButton, { backgroundColor: colors.primary }]}>
+              <Ionicons name="play" size={28} color={colors.primary === '#1DB954' ? '#000' : colors.background} />
             </TouchableOpacity>
           </View>
 
           {/* Action Buttons */}
           <View style={styles.actionButtons}>
             <TouchableOpacity
-              style={styles.actionButton}
+              style={[styles.actionButton, { backgroundColor: colors.surface }]}
               onPress={() => setShowAddModal(true)}
             >
-              <Ionicons name="add" size={18} color="#fff" />
-              <Text style={styles.actionButtonText}>Add</Text>
+              <Ionicons name="add" size={18} color={colors.text} />
+              <Text style={[styles.actionButtonText, { color: colors.text }]}>Add</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="create-outline" size={18} color="#fff" />
-              <Text style={styles.actionButtonText}>Edit</Text>
+            <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.surface }]}>
+              <Ionicons name="create-outline" size={18} color={colors.text} />
+              <Text style={[styles.actionButtonText, { color: colors.text }]}>Edit</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="swap-vertical" size={18} color="#fff" />
-              <Text style={styles.actionButtonText}>Sort</Text>
+            <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.surface }]}>
+              <Ionicons name="swap-vertical" size={18} color={colors.text} />
+              <Text style={[styles.actionButtonText, { color: colors.text }]}>Sort</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.actionButton}>
-              <Ionicons name="create" size={18} color="#fff" />
-              <Text style={styles.actionButtonText}>Name & details</Text>
+            <TouchableOpacity style={[styles.actionButton, { backgroundColor: colors.surface }]}>
+              <Ionicons name="create" size={18} color={colors.text} />
+              <Text style={[styles.actionButtonText, { color: colors.text }]}>Name & details</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -323,9 +331,9 @@ export default function PlaylistDetail() {
         <View style={styles.songsSection}>
           {songs.length === 0 ? (
             <View style={styles.emptyState}>
-              <Ionicons name="musical-notes-outline" size={64} color="#666" />
-              <Text style={styles.emptyTitle}>No songs added yet</Text>
-              <Text style={styles.emptySubtitle}>Tap "Add" to add your first song</Text>
+              <Ionicons name="musical-notes-outline" size={64} color={colors.border} />
+              <Text style={[styles.emptyTitle, { color: colors.text }]}>No songs added yet</Text>
+              <Text style={[styles.emptySubtitle, { color: colors.textSecondary }]}>Tap "Add" to add your first song</Text>
             </View>
           ) : (
             songs.map((songItem, index) => (
@@ -334,6 +342,7 @@ export default function PlaylistDetail() {
                 song={songItem}
                 index={index}
                 onDelete={removeSong}
+                colors={colors}
               />
             ))
           )}
@@ -353,15 +362,16 @@ export default function PlaylistDetail() {
           setSong("");
           setAuthor("");
         }}
+        colors={colors}
       />
-    </View>
+      </View>
+    </ThemeTransitionWrapper>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#121212",
   },
   scrollView: {
     flex: 1,
@@ -434,7 +444,6 @@ const styles = StyleSheet.create({
     color: "#b3b3b3",
   },
   controlsSection: {
-    backgroundColor: "#121212",
     paddingHorizontal: 16,
     paddingVertical: 20,
   },
@@ -456,7 +465,6 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: "#1DB954",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -468,13 +476,11 @@ const styles = StyleSheet.create({
   actionButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#2a2a2a",
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 20,
   },
   actionButtonText: {
-    color: "#fff",
     fontSize: 14,
     fontWeight: "500",
     marginLeft: 6,
@@ -501,13 +507,11 @@ const styles = StyleSheet.create({
   },
   songTitle: {
     fontSize: 16,
-    color: "#fff",
     fontWeight: "500",
     marginBottom: 2,
   },
   songArtist: {
     fontSize: 14,
-    color: "#b3b3b3",
   },
   songMenu: {
     padding: 8,
@@ -519,18 +523,15 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 20,
-    color: "#fff",
     fontWeight: "600",
     marginTop: 16,
     marginBottom: 8,
   },
   emptySubtitle: {
     fontSize: 14,
-    color: "#b3b3b3",
     textAlign: "center",
   },
   errorText: {
-    color: "#ff4d4d",
     fontSize: 16,
     textAlign: "center",
     marginTop: 100,
@@ -547,7 +548,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   modalContent: {
-    backgroundColor: "#2a2a2a",
     borderRadius: 12,
     padding: 24,
     width: width * 0.85,
@@ -555,14 +555,11 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    color: "#fff",
     fontWeight: "600",
     marginBottom: 20,
     textAlign: "center",
   },
   modalInput: {
-    backgroundColor: "#1e1e1e",
-    color: "#fff",
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 8,
@@ -575,19 +572,16 @@ const styles = StyleSheet.create({
   },
   modalCancelButton: {
     flex: 1,
-    backgroundColor: "#404040",
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",
   },
   modalCancelText: {
-    color: "#fff",
     fontSize: 16,
     fontWeight: "500",
   },
   modalAddButton: {
     flex: 1,
-    backgroundColor: "#1DB954",
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: "center",

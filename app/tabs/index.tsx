@@ -1,23 +1,26 @@
+import { ThemeTransitionWrapper } from "@/components/AnimatedTheme";
+import { useTheme } from "@/hooks/useTheme";
+import { Ionicons } from "@expo/vector-icons";
+import { DrawerActions, useNavigation } from "@react-navigation/native";
 import React from "react";
 import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  ScrollView,
-  TouchableOpacity,
   Dimensions,
+  Image,
   Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import { useNavigation, DrawerActions } from "@react-navigation/native";
 
 const { width } = Dimensions.get("window");
 const CARD_SMALL_WIDTH = (width - 48) / 2; // two columns with side padding & gap
 const PICKED_CARD_HEIGHT = 150;
 
-export default function IndexScreen(): JSX.Element {
+export default function IndexScreen() {
   const navigation = useNavigation();
+  const { colors } = useTheme();
   const categories = ["All", "Music", "Podcasts"];
   const tiles = new Array(8).fill(0).map((_, i) => ({
     id: i,
@@ -33,8 +36,9 @@ export default function IndexScreen(): JSX.Element {
   }));
 
   return (
-    <View style={styles.screen}>
-      <ScrollView contentContainerStyle={styles.container}>
+    <ThemeTransitionWrapper>
+      <View style={[styles.screen, { backgroundColor: colors.background }]}>
+        <ScrollView contentContainerStyle={styles.container}>
         {/* Header */}
         <View style={styles.headerRow}>
           <TouchableOpacity
@@ -48,24 +52,24 @@ export default function IndexScreen(): JSX.Element {
 
           <View style={styles.headerActions}>
             {categories.map((c) => (
-              <Pressable key={c} style={styles.pill}>
-                <Text style={styles.pillText}>{c}</Text>
+              <Pressable key={c} style={[styles.pill, { backgroundColor: colors.surface }]}>
+                <Text style={[styles.pillText, { color: colors.text }]}>{c}</Text>
               </Pressable>
             ))}
           </View>
         </View>
 
         {/* Top small tile grid (2 columns) */}
-        <Text style={styles.sectionTitle}>Recents</Text>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>Recents</Text>
         <View style={styles.grid}>
           {tiles.map((t) => (
-            <View key={t.id} style={styles.smallCard}>
+            <View key={t.id} style={[styles.smallCard, { backgroundColor: colors.surface }]}>
               <Image source={t.image} style={styles.smallImage} />
               <View style={styles.smallMeta}>
-                <Text style={styles.smallTitle} numberOfLines={2}>
+                <Text style={[styles.smallTitle, { color: colors.text }]} numberOfLines={2}>
                   {t.title}
                 </Text>
-                <Text style={styles.smallSubtitle} numberOfLines={1}>
+                <Text style={[styles.smallSubtitle, { color: colors.textSecondary }]} numberOfLines={1}>
                   {t.subtitle}
                 </Text>
               </View>
@@ -74,18 +78,18 @@ export default function IndexScreen(): JSX.Element {
         </View>
 
         {/* Picked for you card */}
-        <Text style={[styles.sectionTitle, { marginTop: 8 }]}>Picked for you</Text>
-        <View style={styles.pickedCard}>
+        <Text style={[styles.sectionTitle, { marginTop: 8, color: colors.text }]}>Picked for you</Text>
+        <View style={[styles.pickedCard, { backgroundColor: colors.surface }]}>
           <Image source={require("@/assets/images/playlist1.png")} style={styles.pickedImage} />
           <View style={styles.pickedMeta}>
-            <Text style={styles.pickedLabel}>Playlist</Text>
-            <Text style={styles.pickedTitle}>Today's Top Hits</Text>
-            <Text style={styles.pickedDesc} numberOfLines={2}>
+            <Text style={[styles.pickedLabel, { color: colors.textSecondary }]}>Playlist</Text>
+            <Text style={[styles.pickedTitle, { color: colors.text }]}>Today's Top Hits</Text>
+            <Text style={[styles.pickedDesc, { color: colors.textSecondary }]} numberOfLines={2}>
               The hottest 50. Cover: Sabrina Carpenter
             </Text>
             <View style={styles.pickedActions}>
-              <TouchableOpacity style={styles.pickedCircle} accessibilityRole="button" accessibilityLabel="Add">
-                <Ionicons name="add" size={18} color="#fff" />
+              <TouchableOpacity style={[styles.pickedCircle, { backgroundColor: colors.border }]} accessibilityRole="button" accessibilityLabel="Add">
+                <Ionicons name="add" size={18} color={colors.text} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.pickedPlay} accessibilityRole="button" accessibilityLabel="Play">
                 <Ionicons name="play" size={18} color="#000" />
@@ -95,12 +99,12 @@ export default function IndexScreen(): JSX.Element {
         </View>
 
         {/* Horizontal carousel */}
-        <Text style={[styles.sectionTitle, { marginTop: 16 }]}>Soundtrack your Thursday afternoon</Text>
+        <Text style={[styles.sectionTitle, { marginTop: 16, color: colors.text }]}>Soundtrack your Thursday afternoon</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginVertical: 12 }}>
           {carousel.map((c) => (
             <View key={c.id} style={styles.carouselItem}>
               <Image source={c.image} style={styles.carouselImage} />
-              <Text style={styles.carouselTitle} numberOfLines={1}>
+              <Text style={[styles.carouselTitle, { color: colors.text }]} numberOfLines={1}>
                 {c.title}
               </Text>
             </View>
@@ -112,26 +116,27 @@ export default function IndexScreen(): JSX.Element {
       </ScrollView>
 
       {/* Now Playing bar */}
-      <View style={styles.nowPlaying}>
+      <View style={[styles.nowPlaying, { backgroundColor: colors.surface }]}>
         <Image source={require("@/assets/images/playlist1.png")} style={styles.nowImage} />
         <View style={styles.nowMeta}>
-          <Text style={styles.nowTitle} numberOfLines={1}>
+          <Text style={[styles.nowTitle, { color: colors.text }]} numberOfLines={1}>
             Quite the Opposite
           </Text>
-          <Text style={styles.nowSubtitle} numberOfLines={1}>
+          <Text style={[styles.nowSubtitle, { color: colors.textSecondary }]} numberOfLines={1}>
             Dominic Fike • Jee AP Pro
           </Text>
         </View>
         <View style={styles.nowControls}>
           <TouchableOpacity accessibilityRole="button" accessibilityLabel="Connect">
-            <Ionicons name="bluetooth" size={20} color="#1DB954" />
+            <Ionicons name="bluetooth" size={20} color={colors.primary} />
           </TouchableOpacity>
           <TouchableOpacity accessibilityRole="button" accessibilityLabel="Pause" style={{ marginLeft: 12 }}>
-            <Ionicons name="pause" size={22} color="#fff" />
+            <Ionicons name="pause" size={22} color={colors.text} />
           </TouchableOpacity>
         </View>
       </View>
-    </View>
+      </View>
+    </ThemeTransitionWrapper>
   );
 }
 
@@ -187,7 +192,6 @@ const styles = StyleSheet.create({
   },
 
   sectionTitle: {
-    color: "#fff",
     fontSize: 18,
     fontWeight: "700",
     marginBottom: 8,
@@ -202,7 +206,6 @@ const styles = StyleSheet.create({
     width: CARD_SMALL_WIDTH,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#121212",
     borderRadius: 8,
     padding: 8,
     marginBottom: 12,
@@ -217,18 +220,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   smallTitle: {
-    color: "#fff",
     fontWeight: "700",
     fontSize: 13,
   },
   smallSubtitle: {
-    color: "#9b9b9b",
     fontSize: 11,
   },
 
   pickedCard: {
     flexDirection: "row",
-    backgroundColor: "#1b1b1b",
     borderRadius: 12,
     overflow: "hidden",
     alignItems: "center",

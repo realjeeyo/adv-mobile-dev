@@ -1,23 +1,24 @@
+import { HapticTab } from '@/components/HapticTab';
+import { useTheme } from '@/hooks/useTheme';
+import { AntDesign, FontAwesome, FontAwesome6, Foundation } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { Platform } from 'react-native';
-import { Foundation, AntDesign, FontAwesome6, FontAwesome } from '@expo/vector-icons';
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
 
 export default function TabLayout() {
+  const { colors } = useTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarStyle: {
-          backgroundColor: '#121212', // Spotify dark background
+          backgroundColor: colors.tabBarBackground,
           borderTopWidth: 0,
           height: 75,
         },
-        tabBarActiveTintColor: '#FFF', // Spotify green
-        tabBarInactiveTintColor: '#B3B3B3', // Gray
+        tabBarActiveTintColor: colors.tabBarActive,
+        tabBarInactiveTintColor: colors.tabBarInactive,
         tabBarLabelStyle: {
           fontSize: 12,
         },
