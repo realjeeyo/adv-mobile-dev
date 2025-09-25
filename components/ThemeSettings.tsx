@@ -1,6 +1,6 @@
 import { useTheme } from '@/hooks/useTheme';
 import { useAppDispatch } from '@/store/hooks';
-import { saveThemeToStorage, setCustomColor, setThemeMode } from '@/store/themeSlice';
+import { setCustomColor, setThemeMode } from '@/store/themeSlice';
 import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import {
@@ -45,16 +45,6 @@ export default function ThemeSettings() {
   const handleThemeChange = (newMode: 'light' | 'dark' | 'custom') => {
     dispatch(setThemeMode(newMode));
     
-    // Save to storage with the new theme
-    const updatedTheme = {
-      mode: newMode,
-      colors: newMode === 'light' ? { ...colors } : 
-              newMode === 'dark' ? { ...colors } : colors,
-      customColors: colors,
-      isLoading: false,
-    };
-    dispatch(saveThemeToStorage(updatedTheme) as any);
-
     // Animate selection
     lightAnim.value = withTiming(newMode === 'light' ? 1 : 0, { duration: 300 });
     darkAnim.value = withTiming(newMode === 'dark' ? 1 : 0, { duration: 300 });
@@ -70,16 +60,6 @@ export default function ThemeSettings() {
   const applyCustomColor = (color: string) => {
     if (currentColorKey && color) {
       dispatch(setCustomColor({ key: currentColorKey as any, color }));
-      
-      // Save updated theme to storage
-      const updatedCustomColors = { ...colors, [currentColorKey]: color };
-      const updatedTheme = {
-        mode,
-        colors: mode === 'custom' ? updatedCustomColors : colors,
-        customColors: updatedCustomColors,
-        isLoading: false,
-      };
-      dispatch(saveThemeToStorage(updatedTheme) as any);
       setShowColorPicker(false);
     }
   };

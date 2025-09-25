@@ -58,6 +58,15 @@ const initialState: ThemeState = {
   isLoading: false,
 };
 
+// Synchronous function to save theme to storage
+const saveThemeToStorageSync = async (themeState: ThemeState) => {
+  try {
+    await AsyncStorage.setItem('theme', JSON.stringify(themeState));
+  } catch (error) {
+    console.error('Failed to save theme to storage:', error);
+  }
+};
+
 const themeSlice = createSlice({
   name: 'theme',
   initialState,
@@ -75,6 +84,8 @@ const themeSlice = createSlice({
           state.colors = state.customColors;
           break;
       }
+      // Auto-save theme to storage
+      saveThemeToStorageSync(state);
     },
     setCustomColor: (state, action: PayloadAction<{ key: keyof ThemeColors; color: string }>) => {
       const { key, color } = action.payload;
@@ -82,6 +93,8 @@ const themeSlice = createSlice({
       if (state.mode === 'custom') {
         state.colors[key] = color;
       }
+      // Auto-save theme to storage
+      saveThemeToStorageSync(state);
     },
     setCustomTheme: (state, action: PayloadAction<Partial<ThemeColors>>) => {
       state.customColors = { ...state.customColors, ...action.payload };
