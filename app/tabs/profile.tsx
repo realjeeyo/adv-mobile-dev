@@ -1,3 +1,4 @@
+import CameraWithFilters from "@/components/CameraWithFilters";
 import ThemeSettings from "@/components/ThemeSettings";
 import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
@@ -5,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from "expo-image-picker";
 import React, { useCallback, useEffect, useState } from "react";
 import {
+  Alert,
   Image,
   Modal,
   ScrollView,
@@ -41,6 +43,7 @@ export default function ProfileScreen() {
     { id: string; name: string; cover: string }[]
   >([]);
   const [showThemeSettings, setShowThemeSettings] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
 
   // Individual shake animations for each input
   const usernameShake = useSharedValue(0);
@@ -97,8 +100,23 @@ export default function ProfileScreen() {
     );
   }, [username, email, genre, profileImage]);
 
-  // Pick profile picture
-  const pickImage = async () => {
+  // Handle camera image capture
+  const handleCameraCapture = useCallback((uri: string) => {
+    setProfileImage(uri);
+  }, []);
+
+  // Open camera for profile picture
+  const openCamera = useCallback(() => {
+    setShowCamera(true);
+  }, []);
+
+  // Close camera modal
+  const closeCamera = useCallback(() => {
+    setShowCamera(false);
+  }, []);
+
+  // Pick image from gallery (alternative option)
+  const pickImageFromGallery = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -184,7 +202,20 @@ export default function ProfileScreen() {
 
       {/* Profile Section */}
       <View style={styles.profileRow}>
-        <TouchableOpacity onPress={pickImage} style={styles.avatarWrapper}>
+        <TouchableOpacity 
+          onPress={() => {
+            Alert.alert(
+              "Profile Picture",
+              "Choose an option",
+              [
+                { text: "Take Photo", onPress: openCamera },
+                { text: "Choose from Gallery", onPress: pickImageFromGallery },
+                { text: "Cancel", style: "cancel" }
+              ]
+            );
+          }} 
+          style={styles.avatarWrapper}
+        >
           <Image
             source={{
               uri: profileImage || `https://via.placeholder.com/100?text=${genre}`,
@@ -359,6 +390,13 @@ export default function ProfileScreen() {
           <ThemeSettings />
         </View>
       </Modal>
+
+      {/* Camera Modal */}
+      <CameraWithFilters
+        visible={showCamera}
+        onClose={closeCamera}
+        onImageCapture={handleCameraCapture}
+      />
     </ScrollView>
   );
 }

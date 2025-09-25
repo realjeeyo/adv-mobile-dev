@@ -25,6 +25,7 @@
     },
     "plugins": [
       "expo-router",
+      "expo-camera",
       [
         "expo-splash-screen",
         {
@@ -34,6 +35,10 @@
           "backgroundColor": "#ffffff"
         }
       ]
+    ],
+    "permissions": [
+      "CAMERA",
+      "RECORD_AUDIO"
     ],
     "experiments": {
       "typedRoutes": true
