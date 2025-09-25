@@ -7,16 +7,17 @@
     "icon": "./assets/images/icon.png",
     "scheme": "delgadoapp",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "platforms": ["ios", "android", "web"],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.delgado.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "package": "com.delgado.app"
     },
     "web": {
       "bundler": "metro",
@@ -25,7 +26,14 @@
     },
     "plugins": [
       "expo-router",
-      "expo-camera",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "recordAudioAndroid": true
+        }
+      ],
       [
         "expo-splash-screen",
         {
@@ -35,10 +43,6 @@
           "backgroundColor": "#ffffff"
         }
       ]
-    ],
-    "permissions": [
-      "CAMERA",
-      "RECORD_AUDIO"
     ],
     "experiments": {
       "typedRoutes": true
