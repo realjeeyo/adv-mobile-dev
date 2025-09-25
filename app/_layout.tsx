@@ -75,6 +75,9 @@ function AppContent() {
       }}
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
+      <Drawer.Screen name="index" options={{ drawerLabel: "Home", drawerItemStyle: { display: 'none' } }} />
+      <Drawer.Screen name="login" options={{ drawerLabel: "Login", drawerItemStyle: { display: 'none' } }} />
+      <Drawer.Screen name="signup" options={{ drawerLabel: "Signup", drawerItemStyle: { display: 'none' } }} />
       <Drawer.Screen name="tabs" options={{ drawerLabel: "Main" }} />
     </Drawer>
   );
