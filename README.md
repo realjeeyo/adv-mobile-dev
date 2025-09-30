@@ -113,6 +113,14 @@ Week 5 Activity 1 (Theme Switcher)
   <img src="screenshots/custom4.png" alt="Custom Theme Color Picker" width="250"/>
 </p>
 
+Week 5 Activity 2 (Camera with Filters & Interactive Editing)
+<p> We implemented a fully featured camera system that allows users to capture a profile photo with real-time filters (grayscale & sepia), apply interactive pinch/zoom/pan cropping inside a square frame, rotate the image, and bake the final filtered & cropped result into persistent storage. The captured image is saved locally (with cleanup of older versions) and immediately updates the profile. The editing flow includes an animated save overlay to prevent black screen flashes and ensures a smooth return to the profile screen. </p>
+<p align="center">
+  <img src="screenshots/Camera1.png" alt="Camera Capture with Filters" width="250"/>
+  <img src="screenshots/Camera2.png" alt="Interactive Crop & Rotate" width="250"/>
+  <img src="screenshots/Camera3.png" alt="Profile Updated with New Photo" width="250"/>
+</p>
+
 
 ## 🔧 Tech Stack
 - Expo

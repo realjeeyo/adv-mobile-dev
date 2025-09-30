@@ -12,7 +12,13 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Image,
+  ActivityIndicator,
 } from "react-native";
+import * as FileSystem from 'expo-file-system';
+// @ts-ignore - ensure module exists after installing dependency
+import { captureRef } from 'react-native-view-shot';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Slider from "@react-native-community/slider";
 import Animated, {
   useAnimatedStyle,
@@ -119,6 +125,54 @@ const CameraWithFilters: React.FC<CameraWithFiltersProps> = ({
   const [capturedImageUri, setCapturedImageUri] = useState<string | null>(null);
   const [showEditingTools, setShowEditingTools] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
+  const [imageSize, setImageSize] = useState<{ width: number; height: number } | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  // gesture-based interactive crop
+  const cropContainerRef = useRef<View | null>(null);
+  const translateX = useSharedValue(0);
+  const translateY = useSharedValue(0);
+  const scale = useSharedValue(1);
+  const savedTranslate = useRef({ x: 0, y: 0 });
+  const savedScale = useRef(1);
+  const pinchScale = useSharedValue(1);
+  const MIN_SCALE = 1;
+  const MAX_SCALE = 5;
+
+  const composedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: translateX.value },
+      { translateY: translateY.value },
+      { scale: scale.value * pinchScale.value }
+    ]
+  }));
+
+  const pan = Gesture.Pan()
+    .onUpdate(e => {
+      translateX.value = savedTranslate.current.x + e.translationX;
+      translateY.value = savedTranslate.current.y + e.translationY;
+    })
+    .onEnd(() => {
+      savedTranslate.current = { x: translateX.value, y: translateY.value };
+    });
+
+  const pinch = Gesture.Pinch()
+    .onUpdate(e => {
+      const next = savedScale.current * e.scale;
+      if (next < MIN_SCALE) {
+        pinchScale.value = MIN_SCALE / savedScale.current;
+      } else if (next > MAX_SCALE) {
+        pinchScale.value = MAX_SCALE / savedScale.current;
+      } else {
+        pinchScale.value = e.scale;
+      }
+    })
+    .onEnd(() => {
+      savedScale.current = Math.min(MAX_SCALE, Math.max(MIN_SCALE, savedScale.current * pinchScale.value));
+      scale.value = savedScale.current;
+      pinchScale.value = 1;
+    });
+
+  const gesture = Gesture.Simultaneous(pan, pinch);
   
   const cameraRef = useRef<CameraView>(null);
   const glViewRef = useRef<GLView>(null);
@@ -229,6 +283,12 @@ const CameraWithFilters: React.FC<CameraWithFiltersProps> = ({
 
       if (photo?.uri) {
         setCapturedImageUri(photo.uri);
+        if (photo.width && photo.height) {
+          setImageSize({ width: photo.width, height: photo.height });
+        } else {
+          // Fallback: query size asynchronously
+          Image.getSize(photo.uri, (w, h) => setImageSize({ width: w, height: h }), () => {});
+        }
         setShowEditingTools(true);
       }
     } catch (error) {
@@ -249,6 +309,12 @@ const CameraWithFilters: React.FC<CameraWithFiltersProps> = ({
         compress: 0.8,
         format: ImageManipulator.SaveFormat.JPEG,
       });
+      if ((result as any).width && (result as any).height) {
+        setImageSize({ width: (result as any).width, height: (result as any).height });
+      } else {
+        // Attempt to re-fetch size if not provided
+        Image.getSize(result.uri, (w, h) => setImageSize({ width: w, height: h }), () => {});
+      }
       return result.uri;
     } catch (error) {
       console.error("Editing error:", error);
@@ -256,96 +322,106 @@ const CameraWithFilters: React.FC<CameraWithFiltersProps> = ({
     }
   }, []);
 
-  // Crop image
-  const cropImage = useCallback(async () => {
-    if (!capturedImageUri) return;
-
-    const cropActions: ImageManipulator.Action[] = [
-      {
-        crop: {
-          originX: 50,
-          originY: 50,
-          width: width - 100,
-          height: width - 100, // Square crop
-        },
-      },
-    ];
-
-    const croppedUri = await applyEditing(capturedImageUri, cropActions);
-    setCapturedImageUri(croppedUri);
-  }, [capturedImageUri, applyEditing]);
+  // Crop is now interactive (handled at save time via view-shot capture) – keep placeholder
+  const cropImage = useCallback(async () => {}, []);
 
   // Rotate image
   const rotateImage = useCallback(async () => {
     if (!capturedImageUri) return;
-
-    const rotateActions: ImageManipulator.Action[] = [
-      { rotate: 90 },
-    ];
-
+    const rotateActions: ImageManipulator.Action[] = [{ rotate: 90 }];
     const rotatedUri = await applyEditing(capturedImageUri, rotateActions);
     setCapturedImageUri(rotatedUri);
   }, [capturedImageUri, applyEditing]);
 
-  // Save edited photo
-  const savePhoto = useCallback(async () => {
-    if (!capturedImageUri) return;
-
-    // Apply current filter to the final image if needed
-    let finalUri = capturedImageUri;
-    
-    if (currentFilter !== "none") {
-      const filterActions: ImageManipulator.Action[] = [];
-      
-      if (currentFilter === "grayscale") {
-        // Note: expo-image-manipulator doesn't have direct filter support
-        // In a real implementation, you'd process this through the GL context
-        // For now, we'll save the original and apply filters in post-processing
-      }
-      
-      finalUri = await applyEditing(capturedImageUri, filterActions);
-    }
-
-    onImageCapture(finalUri);
-    handleClose();
-  }, [capturedImageUri, currentFilter, onImageCapture]);
-
-  // Close camera
+  // Close / reset camera modal
   const handleClose = useCallback(() => {
     setCapturedImageUri(null);
     setShowEditingTools(false);
-    setCurrentFilter("none");
+    setCurrentFilter('none');
     setFilterIntensity(1.0);
     onClose();
   }, [onClose]);
 
-  // Permission handling - moved after all hooks
+  // Save edited photo (with fallback directory)
+  const savePhoto = useCallback(async () => {
+    if (!capturedImageUri || isSaving) return;
+    setIsSaving(true);
+    try {
+      let finalUri = capturedImageUri;
+      // 1. Capture the interactive crop viewport (includes filter overlay if applied visually)
+      if (cropContainerRef.current) {
+        try {
+          const capturePath = await captureRef(cropContainerRef.current, {
+            format: 'jpg',
+            quality: 0.9,
+          });
+          if (capturePath) {
+            finalUri = capturePath;
+          }
+        } catch (e) {
+          console.warn('Viewport capture failed, falling back to original', e);
+        }
+      }
+      const fileName = `profile_${Date.now()}.jpg`;
+      const { documentDirectory, cacheDirectory } = FileSystem as any;
+      const baseDir: string | undefined = documentDirectory || cacheDirectory;
+      if (!baseDir) {
+        // Environment (web?) without writable FS – just pass existing uri
+        onImageCapture(finalUri);
+        handleClose();
+        return;
+      }
+      const dest = baseDir + fileName;
+      if (!finalUri.startsWith(baseDir)) {
+        await FileSystem.copyAsync({ from: finalUri, to: dest });
+      }
+      const storedUri = finalUri.startsWith(baseDir) ? finalUri : dest;
+      if (documentDirectory) {
+        try {
+          const files = await FileSystem.readDirectoryAsync(documentDirectory);
+          const profileFiles = files.filter((f: string) => f.startsWith('profile_') && f.endsWith('.jpg')).sort();
+          if (profileFiles.length > 5) { // keep last 5 now
+            const excess = profileFiles.slice(0, profileFiles.length - 5);
+            for (const f of excess) {
+              await FileSystem.deleteAsync(documentDirectory + f, { idempotent: true });
+            }
+          }
+        } catch {}
+      }
+      onImageCapture(storedUri);
+      // Dismiss editing modal first
+      setShowEditingTools(false);
+      // Delay closing camera to avoid black flash
+      setTimeout(() => {
+        handleClose();
+      }, 120);
+    } catch (e) {
+      Alert.alert('Save Failed', 'Could not save photo.');
+      console.error('Save photo error', e);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [capturedImageUri, currentFilter, onImageCapture, handleClose, isSaving]);
+
+  // Permission handling
   if (!permission) {
     return <View />;
   }
-
   if (!permission.granted) {
     return (
       <Modal visible={visible} animationType="slide">
-        <View style={[styles.container, { backgroundColor: colors.background }]}>
-          <View style={styles.permissionContainer}>
-            <Text style={[styles.permissionText, { color: colors.text }]}>
-              We need your permission to show the camera
-            </Text>
-            <TouchableOpacity
-              style={[styles.permissionButton, { backgroundColor: colors.primary }]}
-              onPress={requestPermission}
-            >
-              <Text style={styles.permissionButtonText}>Grant Permission</Text>
-            </TouchableOpacity>
-          </View>
+        <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }]}> 
+          <Text style={[styles.permissionText, { color: colors.text }]}>We need your permission to show the camera</Text>
+          <TouchableOpacity style={[styles.permissionButton, { backgroundColor: colors.primary }]} onPress={requestPermission}>
+            <Text style={styles.permissionButtonText}>Grant Permission</Text>
+          </TouchableOpacity>
         </View>
       </Modal>
     );
   }
 
   return (
-    <Modal visible={visible} animationType="slide">
+    <Modal visible={visible} animationType="slide" presentationStyle="fullScreen">
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         
         {/* Camera View */}
@@ -426,16 +502,38 @@ const CameraWithFilters: React.FC<CameraWithFiltersProps> = ({
               </Text>
             </View>
 
+            {/* Captured Image Preview */}
+            <View style={styles.previewWrapper} ref={r => { cropContainerRef.current = r; }}>
+              {capturedImageUri ? (
+                <GestureDetector gesture={gesture}>
+                  <Animated.Image
+                    source={{ uri: capturedImageUri }}
+                    style={[styles.previewImage, composedStyle]}
+                    resizeMode="cover"
+                  />
+                </GestureDetector>
+              ) : (
+                <View style={styles.previewPlaceholder}>
+                  <ActivityIndicator color={colors.primary} />
+                </View>
+              )}
+              {/* Square frame overlay */}
+              <View pointerEvents="none" style={styles.cropOverlay} />
+            </View>
+
             {/* Editing Tools */}
             <View style={styles.editingTools}>
-              <TouchableOpacity style={styles.editButton} onPress={cropImage}>
-                <Ionicons name="crop" size={24} color={colors.primary} />
-                <Text style={[styles.editButtonText, { color: colors.text }]}>Crop</Text>
-              </TouchableOpacity>
-
               <TouchableOpacity style={styles.editButton} onPress={rotateImage}>
                 <Ionicons name="refresh" size={24} color={colors.primary} />
                 <Text style={[styles.editButtonText, { color: colors.text }]}>Rotate</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.editButton} onPress={() => {
+                // reset transforms
+                translateX.value = 0; translateY.value = 0; savedTranslate.current = { x:0,y:0 };
+                scale.value = 1; pinchScale.value = 1; savedScale.current = 1;
+              }}>
+                <Ionicons name="refresh-circle" size={24} color={colors.primary} />
+                <Text style={[styles.editButtonText, { color: colors.text }]}>Reset</Text>
               </TouchableOpacity>
             </View>
 
@@ -453,12 +551,19 @@ const CameraWithFilters: React.FC<CameraWithFiltersProps> = ({
               <TouchableOpacity
                 style={[styles.actionButton, { backgroundColor: colors.primary }]}
                 onPress={savePhoto}
+                disabled={isSaving}
               >
-                <Text style={styles.actionButtonText}>Save</Text>
+                <Text style={styles.actionButtonText}>{isSaving ? 'Saving...' : 'Save'}</Text>
               </TouchableOpacity>
             </View>
           </View>
         </Modal>
+        {isSaving && (
+          <View style={styles.savingOverlay} pointerEvents="none">
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={[styles.savingText, { color: colors.text }]}>Saving...</Text>
+          </View>
+        )}
       </View>
     </Modal>
   );
@@ -614,6 +719,53 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     padding: 20,
     gap: 15,
+  },
+  previewWrapper: {
+    width: '100%',
+    aspectRatio: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+  },
+  previewImage: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    width: '120%',
+    height: '120%',
+    marginLeft: '-60%',
+    marginTop: '-60%',
+  },
+  cropOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderWidth: 2,
+    borderColor: 'rgba(255,255,255,0.6)'
+  },
+  savingOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 12,
+  },
+  savingText: {
+    fontSize: 16,
+    fontWeight: '600'
+  },
+  previewPlaceholder: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
   },
   actionButton: {
     flex: 1,
