@@ -124,10 +124,10 @@ Week 5 Activity 2 (Camera with Filters & Interactive Editing)
 Week 6 Activity 1 (iOS Build & Deployment)
 <p> We migrated the project to a native iOS workspace using <code>expo prebuild</code>, installed CocoaPods, and built the app with Xcode. The app now runs on iOS Simulator and device with all core features (authentication, playlists, profile, theming, and the advanced camera/editor). Below are screenshots from the iOS build, including the save password prompt and key screens.</p>
 <p align="center">
-  <img src="screenshots/iOS Home (Save Password Prompt).png" alt="iOS Home - Save Password Prompt" width="250"/>
-  <img src="screenshots/iOS Login.png" alt="iOS Login" width="250"/>
-  <img src="screenshots/iOS Playlists.png" alt="iOS Playlists" width="250"/>
-  <img src="screenshots/iOS Profile.png" alt="iOS Profile" width="250"/>
+  <img src="screenshots/week 6/iOS Home (Save Password Prompt).png" alt="iOS Home - Save Password Prompt" width="250"/>
+  <img src="screenshots/week 6/iOS Login.png" alt="iOS Login" width="250"/>
+  <img src="screenshots/week 6/iOS Playlists.png" alt="iOS Playlists" width="250"/>
+  <img src="screenshots/week 6/iOS Profile.png" alt="iOS Profile" width="250"/>
   
 </p>
 
