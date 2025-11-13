@@ -1,4 +1,5 @@
 import CameraWithFilters from "@/components/CameraWithFilters";
+import LocationMap from "@/components/LocationMap";
 import ThemeSettings from "@/components/ThemeSettings";
 import { useTheme } from "@/hooks/useTheme";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,7 +21,8 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSequence,
-  withTiming
+  withTiming,
+  SharedValue
 } from "react-native-reanimated";
 
 // Predefined genres
@@ -63,7 +65,7 @@ export default function ProfileScreen() {
   }));
 
   // Helper function to trigger shake animation
-  const triggerShake = (shakeValue: Animated.SharedValue<number>) => {
+  const triggerShake = (shakeValue: SharedValue<number>) => {
     shakeValue.value = withSequence(
       withTiming(-10, { duration: 80 }),
       withTiming(10, { duration: 80 }),
@@ -369,6 +371,18 @@ export default function ProfileScreen() {
         </View>
       </View>
 
+      {/* Location Map Section */}
+      <View style={styles.section}>
+        <View style={styles.sectionHeader}>
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>Nearby Music Spots</Text>
+          <Ionicons name="location" size={20} color={colors.primary} />
+        </View>
+        <Text style={[styles.sectionSubtitle, { color: colors.textSecondary }]}>
+          Discover music venues and studios around you
+        </Text>
+        <LocationMap height={350} />
+      </View>
+
       {/* Theme Settings Modal */}
       <Modal
         visible={showThemeSettings}
@@ -583,5 +597,15 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 18,
     fontWeight: "600",
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 4,
+  },
+  sectionSubtitle: {
+    fontSize: 13,
+    marginBottom: 12,
   },
 });

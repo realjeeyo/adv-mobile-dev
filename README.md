@@ -122,7 +122,7 @@ Week 5 Activity 2 (Camera with Filters & Interactive Editing)
 </p>
 
 Week 6 Activity 1 (iOS Build & Deployment)
-<p> We migrated the project to a native iOS workspace, installed CocoaPods, and built the app. The app now runs on iOS Simulator and device with all core features (authentication, playlists, profile, theming, and the advanced camera/editor). Below are screenshots from the iOS build, including the save password prompt and key screens.</p>
+<p> We migrated the project to a native iOS workspace using <code>expo prebuild</code>, installed CocoaPods, and built the app with Xcode. The app now runs on iOS Simulator and device with all core features (authentication, playlists, profile, theming, and the advanced camera/editor). Below are screenshots from the iOS build, including the save password prompt and key screens.</p>
 <p align="center">
   <img src="screenshots/week 6/iOS Home (Save Password Prompt).png" alt="iOS Home - Save Password Prompt" width="250"/>
   <img src="screenshots/week 6/iOS Login.png" alt="iOS Login" width="250"/>
@@ -130,6 +130,23 @@ Week 6 Activity 1 (iOS Build & Deployment)
   <img src="screenshots/week 6/iOS Profile.png" alt="iOS Profile" width="250"/>
   
 </p>
+
+Week 6 Activity 2 (Location-Based Map Features)
+<p> We integrated real-time location tracking and interactive map features into the profile screen using <code>expo-location</code> and <code>react-native-maps</code>. The implementation includes:</p>
+<ul>
+  <li><strong>Real-time Location Tracking:</strong> Displays user's current location on a custom-styled dark mode map with accurate positioning</li>
+  <li><strong>Custom Points of Interest:</strong> Three mock music-related landmarks (Music Studio, Concert Hall, Music Store) with custom markers that change color when active</li>
+  <li><strong>Geofencing Alerts:</strong> Automatic notifications when entering or leaving 100-meter radius zones around each point of interest</li>
+  <li><strong>Interactive Map Controls:</strong> Zoom in/out buttons, center-on-user button, and full pan/pinch gesture support</li>
+  <li><strong>Custom Dark Map Style:</strong> Applied a sophisticated dark theme JSON style configuration for enhanced visual design matching the Spotify aesthetic</li>
+  <li><strong>Status Indicators:</strong> Live badge showing how many geofenced locations you're currently near</li>
+</ul>
+<p>The map component is fully integrated into the profile page under "Nearby Music Spots" and works seamlessly across iOS and Android with proper permission handling.</p>
+<p align="center">
+  <img src="screenshots/week 6/iOS location-based map.png" alt="iOS Location-Based Map" width="250"/>
+  <img src="screenshots/week 6/Android location-based map.png" alt="Android Location-Based Map" width="250"/>
+</p>
+
 
 
 
